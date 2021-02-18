@@ -1,0 +1,176 @@
+---
+title: "Algo-Projekt"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## R Markdown
+
+# Packages laden
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(caret)
+```
+
+
+
+#ToDo: Einleitung schreiben und auf den Datensatz eingehen.
+
+
+```{r}
+# Get Dataset
+
+data <- okcupid_profiles
+
+
+```
+
+# EDA
+
+- Woher kommen diese Daten?:
+  Dieser Datensatz stammt von Kaggle und umfasst Personen-Profile von 60.000 Usern der mobile   App der Dating-Platform OKCupid. Autoren sind Albert Kim und Adriana Escobedo-Land.
+
+- Was ist eine Beobachtung in diesem Datensatz?
+  Jede Beobachtung entspricht einem User. Username und Profilbild sind nicht enthalten.
+
+- Was sind die Variablen in diesem Datensatz?
+  Der Datensatz umfasst 31 Variablen
+  - age: Alter
+  - status: Beziehungsstatus
+  - sex: Geschlecht
+  - orientation: sexuelle Orientierung
+  - body_type: Beschreibung des Körpertyps
+  - diet: Ernährungsweise
+  - drinks: Alkoholkonsum
+  - education: Bildungsstand
+  - ethnicity: Ethnie
+  - height: Körpergröße
+  - income: Einkommen
+  - job: Beruf
+  - last_online: letztes mal online
+  - location: Standort
+  - offspring: Kinder und Kinderwunsch
+  - pets: Haustiere
+  - religion: Religionszugehörigkeit
+  - sign: Sternzeichen
+  - smokes: Raucher
+  - speaks: Sprachen
+  - essay 0-9:
+      - 0: My Self Summary
+      - 1: What I'm doing with my life
+      - 2: I'm really good at
+      - 3: The first thing people notice about me
+      - 4: Favorite books, movies, shows, music, and food
+      - 5: The six things I could never do without
+      - 6: I spend a lot of time thinking about
+      - 7: On a typical Friday night I am
+      - 8: The most private thing I’m willing to admit
+      - 9: You should message me if
+
+# Schauen wir uns die diversen Variablen mittels einiger Plots genauer an:
+
+```{r}
+# Alter:
+
+ggplot(data, aes(x=age)) + geom_density()
+median_age <- median(data$age)
+mean_age <- mean(data$age)
+
+group_men <- subset(data, sex=="m")
+group_women <- subset(data, sex=="f")
+  
+gender_age_group <- group_by(data, sex)%>% 
+  summarise(mean_age = mean(age))
+
+```
+# Wir sehen, dass die meisten User eher jung sind. Durchnittsalter liegt bei 32.34 Jahren, Median bei 30. Wenn wir das Durchnittsalter nach Geschlecht aufteilen, sehen wir, dass die Frauen im Schnitt etwas älter sind (32.8) als die Männer (32).
+
+```{r}
+# Beziehungsstatus:
+
+ggplot(data, aes(x=status)) + geom_bar() + geom_text(stat = "count", aes(label = ..count.., vjust = -0.2))
+```
+# Wie zu erwarten war, sind die meisten single. 1865 Personen geben an "available" zu sein, was interessant ist, da man hier wohl davon ausgehen kann, dass sie in einer offenen oder polyamörsen Beziehung leben. Die 310 Beobachtungen die angeben verheiratet zu sein fallen wohl in die selbe Kategorie oder sind auf der Suche nach einem Seitensprung. 2064 Beobachtungen scheinen in einer Beziehung zu sein, behalten aber wohl ihr Profil falls es nichts wird (Ein Mann hat seine Summary auch geupdated "update: i'm seeing someone, so off the market :)")
+
+```{r}
+# Geschlecht:
+
+prop.table(table(data$sex))
+```
+# Hier reicht ein simpler prop.table aus um festzustellen, dass knapp 60% der User männlich sind. Dies scheint bei Datingplattformen relativ häufig der Fall zu sein.
+
+```{r}
+# sexuelle Orientierung:
+
+prop.table(table(data$orientation))
+```
+# Wieder reicht ein prop.table um zu erkennen, dass wir 86% heterosexuelle User haben. 9% sind homosexuell und knapp 5% geben an bisexuell zu sein.
+
+```{r}
+# Beschreibung des Körpertyps:
+
+prop.table(table(group_men$body_type))
+
+prop.table(table(group_women$body_type))
+```
+# Hier bietet sich eine Aufteilung der Geschlechter an, um zu sehen wie sich die beiden Geschlechter beschreiben. Wir sehen zum Beispiel, dass Männer sich mit 28.6% als athletisch beschreiben, während nur 10.8% der Frauen diese Beschreibung wählen. Bei den Frauen tritt mit 17.8% "curvy" auf wohingegen die Männer das nur in 0.3% der Fälle angeben. Die Werte für "average" liegen ungefähr gleich bei 27.2% und 26.2%. Interessant finde ich auch, dass es ein Label gibt, das "used up" lautet, also "verbraucht". Es wird relativ selten benutzt bei den Männern mit 0.8% jedoch häufiger als bei den Frauen mit 0.5%. Überraschend finde ich, dass nur 0.9% der Männer angeben "jacked" zu sein, was einem sehr muskulösen Körperbau entsprechen würde. 0.6% der Frauen geben an "jacked" zu sein. Hier hätte ich mir erwartet, dass das Verhältnis wesentlich größer ist. Frauen möchten fast doppelt so oft wie die Männer lieber nicht sagen ("rather not say") wie sie sich beschreiben würden. Das kommt jedoch generell nicht so häufig vor (Männer 0.3% / Frauen 0.5%).
+
+```{r}
+# Ernährungsweise:
+
+ggplot(group_men, aes(x=diet)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=diet)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$diet))
+
+prop.table(table(group_women$diet))
+```
+# Wenn wir uns die NAs ansehen, stellen wir fest, dass die Ernährungsweise oft nicht angegeben wird. "mostly anything" und "anything" sind nach den NAs die beiden häufigsten Kategorien und sind über die Geschlechter recht gleichmäßig verteilt. Man erkennt jedoch einen Unterschied bei den Kategorien bezüglich vegetarischer und veganer Ernährung, wo die Frauen viel häufiger angeben vegetarisch oder vegan zu Essen.
+
+```{r}
+# Alkoholkonsum:
+
+ggplot(group_men, aes(x=drinks)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=drinks)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$drinks))
+
+prop.table(table(group_women$drinks))
+```
+# Auch hier ergibt der Vergleich der Geschlechter eine recht gleichmäßige Verteilung, wobei die häufigste Kategorie "socially" mit 72.3% der Männer und 74.9% der Frauen ist. "desperately" und "often" tritt bei den Männern häufiger auf. 
+
+```{r}
+# Bildungsstand:
+
+# Ethnie:
+
+# Körpergröße:
+
+# Einkommen:
+
+# Beruf:
+
+# letztes mal online:
+
+# Standort:
+
+# Kinder und Kinderwunsch:
+
+# Haustiere:
+
+# Religionszugehörigkeit:
+
+# Sternzeichen:
+
+# Raucher:
+  
+# Sprachen:
+
+```
