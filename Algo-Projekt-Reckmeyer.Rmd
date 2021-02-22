@@ -323,4 +323,29 @@ table_mat
 accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
 accuracy_Test
 ```
+## Das Model auf das ich mich am Eende festgelegt habe hat eine Accuracy von 86% was kein schlechter Wert ist. Ich denke man könnte noch einen höheren Wert erreichen, wenn man die Essay-Fragen auf eine sinnvolle Weise inkludiert.
 
+```{r}
+# Schauen wir uns auch noch precision und recall an:
+
+precision <- function(matrix) {
+	# True positive
+    tp <- matrix[2, 2]
+	# false positive
+    fp <- matrix[1, 2]
+    return (tp / (tp + fp))
+}
+
+recall <- function(matrix) {
+# true positive
+    tp <- matrix[2, 2]# false positive
+    fn <- matrix[2, 1]
+    return (tp / (tp + fn))
+}
+
+prec <- precision(table_mat)
+prec
+rec <- recall(table_mat)
+rec
+```
+## Diese Werte sind meiner Meinung nach auch völlig akzeptabel, sowohl precision als auch recall liegen bei 87%.
