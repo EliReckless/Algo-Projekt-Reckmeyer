@@ -14,22 +14,22 @@ library(tidyverse)
 # Packages laden
 
 ```{r}
+library(readr)
 library(dplyr)
 library(tidyverse)
 library(caret)
+library(class)
 ```
 
 
-
-#ToDo: Einleitung schreiben und auf den Datensatz eingehen.
+# Einleitung:
+## Der OKCupid Datensatz ist mir schon seit längerem bekannt und hat viel Neugier bei mir geweckt. Am Anfang des Semesters hat der Datensatz mich aber noch überfordert und nachdem wir zu dem Zeitpunkt auch gerade erst bei der linearen Regression angekommen waren, habe ich den Datensatz wieder geparkt und etwas anderes gesucht. Nach einigem Hin und Her habe ich mir diesen Datensatz erneut angesehen und festgestellt, dass er sich sehr gut für eine Klassifikation eignen würde, da er über sehr viele Variablen verfügt, die potentiell dabei behilflich sein könnten zum beispiel zwischen Männern und Frauen zu unterscheiden. Bei der folgenden EDA wird man bereits erkennen, dass sie mein Fokus darauf richtet.
 
 
 ```{r}
 # Get Dataset
-
+okcupid_profiles <- read_csv("~/okcupid_profiles.csv")
 data <- okcupid_profiles
-
-
 ```
 
 # EDA
@@ -77,9 +77,8 @@ data <- okcupid_profiles
 
 # Schauen wir uns die diversen Variablen mittels einiger Plots genauer an:
 
+## Alter:
 ```{r}
-# Alter:
-
 ggplot(data, aes(x=age)) + geom_density()
 median_age <- median(data$age)
 mean_age <- mean(data$age)
@@ -91,25 +90,25 @@ gender_age_group <- group_by(data, sex)%>%
   summarise(mean_age = mean(age))
 
 ```
-# Wir sehen, dass die meisten User eher jung sind. Durchnittsalter liegt bei 32.34 Jahren, Median bei 30. Wenn wir das Durchnittsalter nach Geschlecht aufteilen, sehen wir, dass die Frauen im Schnitt etwas älter sind (32.8) als die Männer (32).
+## Wir sehen, dass die meisten User eher jung sind. Durchnittsalter liegt bei 32.34 Jahren, Median bei 30. Wenn wir das Durchnittsalter nach Geschlecht aufteilen, sehen wir, dass die Frauen im Schnitt etwas älter sind (32.8) als die Männer (32).
 
+
+## Beziehungsstatus:
 ```{r}
-# Beziehungsstatus:
-
 ggplot(data, aes(x=status)) + geom_bar() + geom_text(stat = "count", aes(label = ..count.., vjust = -0.2))
 ```
-# Wie zu erwarten war, sind die meisten single. 1865 Personen geben an "available" zu sein, was interessant ist, da man hier wohl davon ausgehen kann, dass sie in einer offenen oder polyamörsen Beziehung leben. Die 310 Beobachtungen die angeben verheiratet zu sein fallen wohl in die selbe Kategorie oder sind auf der Suche nach einem Seitensprung. 2064 Beobachtungen scheinen in einer Beziehung zu sein, behalten aber wohl ihr Profil falls es nichts wird (Ein Mann hat seine Summary auch geupdated "update: i'm seeing someone, so off the market :)")
+## Wie zu erwarten war, sind die meisten single. 1865 Personen geben an "available" zu sein, was interessant ist, da man hier wohl davon ausgehen kann, dass sie in einer offenen oder polyamörsen Beziehung leben. Die 310 Beobachtungen die angeben verheiratet zu sein fallen wohl in die selbe Kategorie oder sind auf der Suche nach einem Seitensprung. 2064 Beobachtungen scheinen in einer Beziehung zu sein, behalten aber wohl ihr Profil falls es nichts wird (Ein Mann hat seine Summary auch geupdated "update: i'm seeing someone, so off the market :)")
 
+
+## Geschlecht:
 ```{r}
-# Geschlecht:
-
 prop.table(table(data$sex))
 ```
-# Hier reicht ein simpler prop.table aus um festzustellen, dass knapp 60% der User männlich sind. Dies scheint bei Datingplattformen relativ häufig der Fall zu sein.
+## Hier reicht ein simpler prop.table aus um festzustellen, dass knapp 60% der User männlich sind. Dies scheint bei Datingplattformen relativ häufig der Fall zu sein.
 
+
+## sexuelle Orientierung:
 ```{r}
-# sexuelle Orientierung:
-
 ggplot(group_men, aes(x=orientation)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=orientation)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -118,20 +117,18 @@ prop.table(table(group_men$orientation))
 prop.table(table(group_women$orientation))
 ```
 
-# Die meisten der User sind heterosexuell. Bei der Aufteilung nach Geschlecht fällt auf, dass Frauen (8.3%) vier Mal so häufig angeben bisexuell zu sein, als die Männer (2.2%). Hingegen geben Männer häufiger an homosexuell zu sein (11.1%) als die Frauen (6.6%)
+## Die meisten der User sind heterosexuell. Bei der Aufteilung nach Geschlecht fällt auf, dass Frauen (8.3%) vier Mal so häufig angeben bisexuell zu sein, als die Männer (2.2%). Hingegen geben Männer häufiger an homosexuell zu sein (11.1%) als die Frauen (6.6%)
 
+## Beschreibung des Körpertyps:
 ```{r}
-# Beschreibung des Körpertyps:
-
 prop.table(table(group_men$body_type))
 
 prop.table(table(group_women$body_type))
 ```
-# Hier bietet sich eine Aufteilung der Geschlechter an, um zu sehen wie sich die beiden Geschlechter beschreiben. Wir sehen zum Beispiel, dass Männer sich mit 28.6% als athletisch beschreiben, während nur 10.8% der Frauen diese Beschreibung wählen. Bei den Frauen tritt mit 17.8% "curvy" auf wohingegen die Männer das nur in 0.3% der Fälle angeben. Die Werte für "average" liegen ungefähr gleich bei 27.2% und 26.2%. Interessant finde ich auch, dass es ein Label gibt, das "used up" lautet, also "verbraucht". Es wird relativ selten benutzt bei den Männern mit 0.8% jedoch häufiger als bei den Frauen mit 0.5%. Überraschend finde ich, dass nur 0.9% der Männer angeben "jacked" zu sein, was einem sehr muskulösen Körperbau entsprechen würde. 0.6% der Frauen geben an "jacked" zu sein. Hier hätte ich mir erwartet, dass das Verhältnis wesentlich größer ist. Frauen möchten fast doppelt so oft wie die Männer lieber nicht sagen ("rather not say") wie sie sich beschreiben würden. Das kommt jedoch generell nicht so häufig vor (Männer 0.3% / Frauen 0.5%).
+## Hier bietet sich eine Aufteilung der Geschlechter an, um zu sehen wie sich die beiden Geschlechter beschreiben. Wir sehen zum Beispiel, dass Männer sich mit 28.6% als athletisch beschreiben, während nur 10.8% der Frauen diese Beschreibung wählen. Bei den Frauen tritt mit 17.8% "curvy" auf wohingegen die Männer das nur in 0.3% der Fälle angeben. Die Werte für "average" liegen ungefähr gleich bei 27.2% und 26.2%. Interessant finde ich auch, dass es ein Label gibt, das "used up" lautet, also "verbraucht". Es wird relativ selten benutzt bei den Männern mit 0.8% jedoch häufiger als bei den Frauen mit 0.5%. Überraschend finde ich, dass nur 0.9% der Männer angeben "jacked" zu sein, was einem sehr muskulösen Körperbau entsprechen würde. 0.6% der Frauen geben an "jacked" zu sein. Hier hätte ich mir erwartet, dass das Verhältnis wesentlich größer ist. Frauen möchten fast doppelt so oft wie die Männer lieber nicht sagen ("rather not say") wie sie sich beschreiben würden. Das kommt jedoch generell nicht so häufig vor (Männer 0.3% / Frauen 0.5%).
 
+## Ernährungsweise:
 ```{r}
-# Ernährungsweise:
-
 ggplot(group_men, aes(x=diet)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=diet)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -139,11 +136,11 @@ prop.table(table(group_men$diet))
 
 prop.table(table(group_women$diet))
 ```
-# Wenn wir uns die NAs ansehen, stellen wir fest, dass die Ernährungsweise oft nicht angegeben wird. "mostly anything" und "anything" sind nach den NAs die beiden häufigsten Kategorien und sind über die Geschlechter recht gleichmäßig verteilt. Man erkennt jedoch einen Unterschied bei den Kategorien bezüglich vegetarischer und veganer Ernährung, wo die Frauen viel häufiger angeben vegetarisch oder vegan zu Essen.
+## Wenn wir uns die NAs ansehen, stellen wir fest, dass die Ernährungsweise oft nicht angegeben wird. "mostly anything" und "anything" sind nach den NAs die beiden häufigsten Kategorien und sind über die Geschlechter recht gleichmäßig verteilt. Man erkennt jedoch einen Unterschied bei den Kategorien bezüglich vegetarischer und veganer Ernährung, wo die Frauen viel häufiger angeben vegetarisch oder vegan zu Essen.
 
+
+## Alkoholkonsum:
 ```{r}
-# Alkoholkonsum:
-
 ggplot(group_men, aes(x=drinks)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=drinks)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -151,11 +148,11 @@ prop.table(table(group_men$drinks))
 
 prop.table(table(group_women$drinks))
 ```
-# Auch hier ergibt der Vergleich der Geschlechter eine recht gleichmäßige Verteilung, wobei die häufigste Kategorie "socially" mit 72.3% der Männer und 74.9% der Frauen ist. "desperately" und "often" tritt bei den Männern häufiger auf. 
+## Auch hier ergibt der Vergleich der Geschlechter eine recht gleichmäßige Verteilung, wobei die häufigste Kategorie "socially" mit 72.3% der Männer und 74.9% der Frauen ist. "desperately" und "often" tritt bei den Männern häufiger auf. 
 
+
+## Drogenkonsum:
 ```{r}
-# Drogenkonsum
-
 ggplot(group_men, aes(x=drugs)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=drugs)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -164,12 +161,10 @@ prop.table(table(group_men$drugs))
 prop.table(table(group_women$drugs))
 
 ```
-# Drogenkosum tritt bei Männern häufiger aus, also bei den Frauen, wobei die meisten mit über 80% bei beiden Geschlechtern angeben, nie Drogen zu konsumieren.
+## Drogenkosum tritt bei Männern häufiger aus, also bei den Frauen, wobei die meisten mit über 80% bei beiden Geschlechtern angeben, nie Drogen zu konsumieren.
 
-
+## Bildungsstand:
 ```{r}
-# Bildungsstand:
-
 ggplot(group_men, aes(x=education)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=education)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -178,7 +173,9 @@ prop.table(table(group_men$education))
 prop.table(table(group_women$education))
 
 ```
-# Auch bei der Bildung sehen wir wieder einige NAs. Die häufigsten Kategorien sind ein Abschluss vom College/Universität, graduated from masters program und working on college/university. Was die erste betrifft sind die Geschlechter recht gleich verteilt. Bei den Frauen kommt ein Abschluss von einem Master jedoch häufiger vor (14.9% Männer, 19.6% Frauen). Auch bei denen, die sich gerade im Studium befinden, ist die Differenz eher gering. Bei den Männern ist die Drop-Out-Rate für diverse Bildungswege jedoch höher als bei den Frauen.
+## Auch bei der Bildung sehen wir wieder einige NAs. Die häufigsten Kategorien sind ein Abschluss vom College/Universität, graduated from masters program und working on college/university. Was die erste betrifft sind die Geschlechter recht gleich verteilt. Bei den Frauen kommt ein Abschluss von einem Master jedoch häufiger vor (14.9% Männer, 19.6% Frauen). Auch bei denen, die sich gerade im Studium befinden, ist die Differenz eher gering. Bei den Männern ist die Drop-Out-Rate für diverse Bildungswege jedoch höher als bei den Frauen.
+
+
 
 ```{r}
 # Ethnie:
@@ -187,18 +184,16 @@ asian <- sum(str_count(data$ethnicity, "asian"))
 # ToDo: Weitere Betrachtung sinnvoll? Wie?
 ```
 
-
+## Körpergröße:
 ```{r}
-# Körpergröße:
-
 ggplot(group_men, aes(x=height)) + geom_density()
 ggplot(group_women, aes(x=height)) + geom_density()
 ```
-# Man sieht wie zu erwarten war, dass die Männer größer sind als die Frauen. Die Angabe erfolgt hier in Inches. Das wird für eine eventuelle Klassifikation später noch interessant.
+## Man sieht wie zu erwarten war, dass die Männer größer sind als die Frauen. Die Angabe erfolgt hier in Inches. Das wird für eine eventuelle Klassifikation später noch interessant.
 
+
+## Einkommen:
 ```{r}
-# Einkommen:
-
 # Remove -1s (would rather not say) from the Data
 income_group <- subset(data, income!="-1")
 income_group_men <- subset(group_men, income!="-1")
@@ -218,32 +213,10 @@ median_income_women <- median(income_group_women$income, na.rm=T)
 
 
 ```
-# Zunächst habe ich die Werte an -1 entfernt, weil diese Personen ihr Einkommen nicht angeben möchten. Am Ende bleiben uns bei den Männern 8391 und den Frauen 3113 übrig. Wir erkennen also, dass die überwiegende Mehrheit ihr Einkommen nicht angeben möchte. Das Verhältnis von Männern und Frauen ist auch ungleich, was bei der Interpretation der Ergebnisse eine wichtige Rolle spielt. Die Aussagen sind mit Vorsicht zu genießen.Schauen wir uns die resultierenden Graphen an, so stellen wir fest, dass die Männer ein höheres Einkommen haben (siehe auch Media und Mean). Das ist nicht überraschend. Der Graph zeigt auch, dass die Angabe in Einkommens-Spannen erfolgt, wir haben also diverse Spitzen im Graph.
+## Zunächst habe ich die Werte an -1 entfernt, weil diese Personen ihr Einkommen nicht angeben möchten. Am Ende bleiben uns bei den Männern 8391 und den Frauen 3113 übrig. Wir erkennen also, dass die überwiegende Mehrheit ihr Einkommen nicht angeben möchte. Das Verhältnis von Männern und Frauen ist auch ungleich, was bei der Interpretation der Ergebnisse eine wichtige Rolle spielt. Die Aussagen sind mit Vorsicht zu genießen.Schauen wir uns die resultierenden Graphen an, so stellen wir fest, dass die Männer ein höheres Einkommen haben (siehe auch Media und Mean). Das ist nicht überraschend. Der Graph zeigt auch, dass die Angabe in Einkommens-Spannen erfolgt, wir haben also diverse Spitzen im Graph.
 
+## Kinder und Kinderwunsch:
 ```{r}
-# Beruf:
-
-# ToDo: Anschauen? Wenn ja, wie?
-```
-
-
-```{r}
-# letztes mal online:
-
-# ToDo: Anschauen? Wenn ja, wie?
-```
-
-
-```{r}
-# Standort:
-
-# ToDo: Anschauen? Wenn ja, wie?
-```
-
-
-```{r}
-# Kinder und Kinderwunsch:
-
 ggplot(group_men, aes(x=offspring)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=offspring)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -252,11 +225,10 @@ prop.table(table(group_men$offspring))
 prop.table(table(group_women$offspring))
 
 ```
-# Auch hier beobachten wir wieder sehr viele NAs. Die davon abgesehen häufigste Kategorie sind die Kinderlosen mit 32.9% bei den Männern und 28.7% bei den Frauen. Bei den kinderlosen Frauen ist der Wunsch nach einem Kind etwas stärker ausgeprägt (16.9%) als bei den Männern (12.8%). Bei der Kategorie "doesn't have kids, but might want them" wo also nicht ganz sicher ist, ob man Kinder will, sind die Männer mit 17.55% wiederum häufiger vertreten als die Frauen mit 13.8%. Das gleiche Verhätlnis erkennen wir auch in den Kategorien "wants kids" und "might wants kids". Also generell sind sich die Frauen hier ein wenig sicherer. Der Anteil der keine Kinder hat und auch keine will ist bei den Geschlechtern jedoch gleich häufig.
+## Auch hier beobachten wir wieder sehr viele NAs. Die davon abgesehen häufigste Kategorie sind die Kinderlosen mit 32.9% bei den Männern und 28.7% bei den Frauen. Bei den kinderlosen Frauen ist der Wunsch nach einem Kind etwas stärker ausgeprägt (16.9%) als bei den Männern (12.8%). Bei der Kategorie "doesn't have kids, but might want them" wo also nicht ganz sicher ist, ob man Kinder will, sind die Männer mit 17.55% wiederum häufiger vertreten als die Frauen mit 13.8%. Das gleiche Verhätlnis erkennen wir auch in den Kategorien "wants kids" und "might wants kids". Also generell sind sich die Frauen hier ein wenig sicherer. Der Anteil der keine Kinder hat und auch keine will ist bei den Geschlechtern jedoch gleich häufig.
 
+## Haustiere:
 ```{r}
-# Haustiere:
-
 ggplot(group_men, aes(x=pets)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=pets)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -265,11 +237,10 @@ prop.table(table(group_men$pets))
 prop.table(table(group_women$pets))
 
 ```
-# Auch hier wieder viele NAs. Beide Geschlechter können als eher tierlieb bezeichnet werden. Es kommt also selten vor, dass jemand angiebt Katzen oder Kunde überhaupt nicht zu mögen. Jedoch sind die Frauen in allen Kategorien die den Beistz von Haustieren betreffen häufiger vertreten.
+## Auch hier wieder viele NAs. Beide Geschlechter können als eher tierlieb bezeichnet werden. Es kommt also selten vor, dass jemand angiebt Katzen oder Kunde überhaupt nicht zu mögen. Jedoch sind die Frauen in allen Kategorien die den Beistz von Haustieren betreffen häufiger vertreten.
 
+## Religionszugehörigkeit:
 ```{r}
-# Religionszugehörigkeit:
-
 ggplot(group_men, aes(x=religion)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=religion)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -277,11 +248,10 @@ prop.table(table(group_men$religion))
 
 prop.table(table(group_women$religion))
 ```
-# Da auch hier wieder viele NAs vorhanden sind und eine Vielzahl an Antwortkategorien vorhanden ist, bin ich skeptisch ob hier viel für eine Klassifikation zu holen ist.
+## Da auch hier wieder viele NAs vorhanden sind und eine Vielzahl an Antwortkategorien vorhanden ist, bin ich skeptisch ob hier viel für eine Klassifikation zu holen ist.
 
+## Sternzeichen:
 ```{r}
-# Sternzeichen:
-
 ggplot(group_men, aes(x=sign)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=sign)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -290,11 +260,10 @@ prop.table(table(group_men$sign))
 prop.table(table(group_women$sign))
 
 ```
-# Hier war zu erwarten, dass die Häufigkeit der Sternzeichen einer Gleichverteilung entpsircht und das bestätigt sich auch. Bei beiden Geschlechtern ist zu erkennen, dass ihnen die Beuteutung des Sternzeichens nicht sehr wichtig ist, Frau geben jedoch häufiger an, dass ihnen Spaß macht sich darüber Gedanken zu machen, was für eine Klassifikation interessant sein könnte.
+## Hier war zu erwarten, dass die Häufigkeit der Sternzeichen einer Gleichverteilung entpsircht und das bestätigt sich auch. Bei beiden Geschlechtern ist zu erkennen, dass ihnen die Beuteutung des Sternzeichens nicht sehr wichtig ist, Frau geben jedoch häufiger an, dass ihnen Spaß macht sich darüber Gedanken zu machen, was für eine Klassifikation interessant sein könnte.
 
+## Raucher:
 ```{r}
-# Raucher:
-
 ggplot(group_men, aes(x=smokes)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ggplot(group_women, aes(x=smokes)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
@@ -302,45 +271,56 @@ prop.table(table(group_men$smokes))
 
 prop.table(table(group_women$smokes))
 ```
-# Was das Rauchen betrifft, sehen wir kaum einen Unterschied zwischen den Geschlechtern. Ich bin jedoch überrascht, dass es nur so wenige Raucher sind.
+## Was das Rauchen betrifft, sehen wir kaum einen Unterschied zwischen den Geschlechtern. Ich bin jedoch überrascht, dass es nur so wenige Raucher sind.
+
+### Ethnie, Standort, letztes mal online, Beruf und Sprachen habe ich nicht weiter analysiert, weil sie entweder nicht viekversprechend für eine Klassifikation sind, sehr viele NAs enthalten oder so viele Ausprägungen haben, dass man die gesamte Variable erst mal neu aufteilen müsste. Die Essayfragen habe ich ebenfalls nicht näher betrachtet, weil es hier schon sehr qualitativ wird und das den Rahmen dieses Projekts sprengen würde.
+
+## Klassifikation mittels logisitischer Regression
 
 ```{r}
-# Sprachen:
+# Zunächst hole ich mir alle Variablen, die mich interessieren könnten und schauen wie viele übrig bleiben, wenn ich die NAs entferne.
 
-# Augrund der vielen Ausprägungen ist es hier schwer etwas sinnvolles herauszulesen. 
-
-```
-
-
-# Klassifikation mittels logisitischer Regression
-
-```{r}
 okcupid_profiles <- data %>% select(age, status, sex, orientation, body_type, diet, drinks, drugs, education, height, income, offspring, pets, sign) %>% drop_na()
 
-okcupid_profiles_complete <- subset(okcupid_profiles, income!="-1")
+# 9269 bleiben übrig, was auf jeden Fall ausreichend sein sollte.
 
-View(okcupid_profiles)
-
-prop.table(table(okcupid_profiles_complete$sex))
+prop.table(table(okcupid_profiles$sex))
+# Klassenverteilung ist relativ ähnlich und sollte so in Ordnung sein.
 ```
 
 
 ```{r}
-# ggf. sample bzw. downsample
 set.seed(1303)
 
-okcupid_profiles_complete$sex <- as.factor(okcupid_profiles_complete$sex)
+# Geschlecht als Faktorvariable setzen
+okcupid_profiles$sex <- as.factor(okcupid_profiles$sex)
 
-temp <- sample(nrow(okcupid_profiles_complete), nrow(okcupid_profiles_complete)*.7)
+# Trainings- und Test-Datensplit
+temp <- sample(nrow(okcupid_profiles), nrow(okcupid_profiles)*.7)
 
-trn_data <- okcupid_profiles_complete[temp,]
-tst_data <- okcupid_profiles_complete[-temp,]
+trn_data <- okcupid_profiles[temp,]
+prop.table(table(trn_data$sex))
 
+tst_data <- okcupid_profiles[-temp,]
+prop.table(table(tst_data$sex))
 
-View(trn_data)
+# Verteilung der Geschlechter ist im Trainings- und Testdatensatz auch ok.
 
-# Create and fit your model
-logistic_model <- glm(sex ~ ., family = "binomial", data=trn_data)
+# Create and fit model
+logistic_model <- glm(sex ~ age + orientation + body_type + height + pets + income + drugs + drinks + education + offspring + diet, family = "binomial", data=trn_data)
 summary(logistic_model)
+```
+# Hier habe ich zunächst mal alle der Variablen verwendet, die ich mir im letzten Schritt rausgeholt hat und dann nach und nach die rausgegeben, die das Model nicht verbessert haben. 
+
+```{r}
+# Test Model
+
+predict <- predict(logistic_model, newdata=tst_data, type="response")
+
+table_mat <- table(tst_data$sex, predict > 0.5)
+table_mat
+
+accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
+accuracy_Test
 ```
 
