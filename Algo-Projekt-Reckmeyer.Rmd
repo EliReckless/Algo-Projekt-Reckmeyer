@@ -149,26 +149,129 @@ prop.table(table(group_women$drinks))
 ```{r}
 # Bildungsstand:
 
+ggplot(group_men, aes(x=education)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=education)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$education))
+
+prop.table(table(group_women$education))
+
+```
+# Auch bei der Bildung sehen wir wieder einige NAs. Die häufigsten Kategorien sind ein Abschluss vom College/Universität, graduated from masters program und working on college/university. Was die erste betrifft sind die Geschlechter recht gleich verteilt. Bei den Frauen kommt ein Abschluss von einem Master jedoch häufiger vor (14.9% Männer, 19.6% Frauen). Auch bei denen, die sich gerade im Studium befinden, ist die Differenz eher gering. Bei den Männern ist die Drop-Out-Rate für diverse Bildungswege jedoch höher als bei den Frauen.
+
+```{r}
 # Ethnie:
 
+asian <- sum(str_count(data$ethnicity, "asian"))
+# ToDo: Weitere Betrachtung sinnvoll? Wie?
+```
+
+
+```{r}
 # Körpergröße:
 
+ggplot(group_men, aes(x=height)) + geom_density()
+ggplot(group_women, aes(x=height)) + geom_density()
+```
+# Man sieht wie zu erwarten war, dass die Männer größer sind als die Frauen. Die Angabe erfolgt hier in Inches. Das wird für eine eventuelle Klassifikation später noch interessant.
+
+```{r}
 # Einkommen:
 
+# Remove -1s (would rather not say) from the Data
+income_group <- subset(data, income!="-1")
+income_group_men <- subset(group_men, income!="-1")
+income_group_women <- subset(group_women, income!="-1")
+
+ggplot(income_group_men, aes(x=income)) + geom_density()
+ggplot(income_group_women, aes(x=income)) + geom_density()
+
+ggplot(income_group, aes(x = income, fill = sex)) + geom_density(alpha = 0.1)
+
+mean_income_men <- mean(income_group_men$income, na.rm=T)
+mean_income_women <- mean(income_group_women$income, na.rm=T)
+
+median_income_men <- median(income_group_men$income, na.rm=T)
+median_income_women <- median(income_group_women$income, na.rm=T)
+
+
+
+```
+# Zunächst habe ich die Werte an -1 entfernt, weil diese Personen ihr Einkommen nicht angeben möchten. Am Ende bleiben uns bei den Männern 8391 und den Frauen 3113 übrig. Wir erkennen also, dass die überwiegende Mehrheit ihr Einkommen nicht angeben möchte. Das Verhältnis von Männern und Frauen ist auch ungleich, was bei der Interpretation der Ergebnisse eine wichtige Rolle spielt. Die Aussagen sind mit Vorsicht zu genießen.Schauen wir uns die resultierenden Graphen an, so stellen wir fest, dass die Männer ein höheres Einkommen haben (siehe auch Media und Mean). Das ist nicht überraschend. Der Graph zeigt auch, dass die Angabe in Einkommens-Spannen erfolgt, wir haben also diverse Spitzen im Graph.
+
+```{r}
 # Beruf:
 
+# ToDo: Anschauen? Wenn ja, wie?
+```
+
+
+```{r}
 # letztes mal online:
 
+# ToDo: Anschauen? Wenn ja, wie?
+```
+
+
+```{r}
 # Standort:
 
+# ToDo: Anschauen? Wenn ja, wie?
+```
+
+
+```{r}
 # Kinder und Kinderwunsch:
 
+ggplot(group_men, aes(x=offspring)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=offspring)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$offspring))
+
+prop.table(table(group_women$offspring))
+
+```
+# Auch hier beobachten wir wieder sehr viele NAs. Die davon abgesehen häufigste Kategorie sind die Kinderlosen mit 32.9% bei den Männern und 28.7% bei den Frauen. Bei den kinderlosen Frauen ist der Wunsch nach einem Kind etwas stärker ausgeprägt (16.9%) als bei den Männern (12.8%). Bei der Kategorie "doesn't have kids, but might want them" wo also nicht ganz sicher ist, ob man Kinder will, sind die Männer mit 17.55% wiederum häufiger vertreten als die Frauen mit 13.8%. Das gleiche Verhätlnis erkennen wir auch in den Kategorien "wants kids" und "might wants kids". Also generell sind sich die Frauen hier ein wenig sicherer. Der Anteil der keine Kinder hat und auch keine will ist bei den Geschlechtern jedoch gleich häufig.
+
+```{r}
 # Haustiere:
 
+ggplot(group_men, aes(x=pets)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=pets)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$pets))
+
+prop.table(table(group_women$pets))
+
+```
+# Auch hier wieder viele NAs. Beide Geschlechter können als eher tierlieb bezeichnet werden. Es kommt also selten vor, dass jemand angiebt Katzen oder Kunde überhaupt nicht zu mögen. Jedoch sind die Frauen in allen Kategorien die den Beistz von Haustieren betreffen häufiger vertreten.
+
+```{r}
 # Religionszugehörigkeit:
 
+ggplot(group_men, aes(x=religion)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=religion)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$religion))
+
+prop.table(table(group_women$religion))
+```
+# Da auch hier wieder viele NAs vorhanden sind und eine Vielzahl an Antwortkategorien vorhanden ist, bin ich skeptisch ob hier viel für eine Klassifikation zu holen ist.
+
+```{r}
 # Sternzeichen:
 
+ggplot(group_men, aes(x=sign)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=sign)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$sign))
+
+prop.table(table(group_women$sign))
+
+```
+# Hier war zu erwarten, dass die Häufigkeit der Sternzeichen einer Gleichverteilung entpsircht und das bestätigt sich auch. Bei beiden Geschlechtern ist zu erkennen, dass ihnen die Beuteutung des Sternzeichens nicht sehr wichtig ist, Frau geben jedoch häufiger an, dass ihnen Spaß macht sich darüber Gedanken zu machen, was für eine Klassifikation interessant sein könnte.
+
+```{r}
 # Raucher:
   
 # Sprachen:
