@@ -49,6 +49,7 @@ data <- okcupid_profiles
   - body_type: Beschreibung des Körpertyps
   - diet: Ernährungsweise
   - drinks: Alkoholkonsum
+  - drugs: Drogenkonsum
   - education: Bildungsstand
   - ethnicity: Ethnie
   - height: Körpergröße
@@ -109,9 +110,15 @@ prop.table(table(data$sex))
 ```{r}
 # sexuelle Orientierung:
 
-prop.table(table(data$orientation))
+ggplot(group_men, aes(x=orientation)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=orientation)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$orientation))
+
+prop.table(table(group_women$orientation))
 ```
-# Wieder reicht ein prop.table um zu erkennen, dass wir 86% heterosexuelle User haben. 9% sind homosexuell und knapp 5% geben an bisexuell zu sein.
+
+# Die meisten der User sind heterosexuell. Bei der Aufteilung nach Geschlecht fällt auf, dass Frauen (8.3%) vier Mal so häufig angeben bisexuell zu sein, als die Männer (2.2%). Hingegen geben Männer häufiger an homosexuell zu sein (11.1%) als die Frauen (6.6%)
 
 ```{r}
 # Beschreibung des Körpertyps:
@@ -145,6 +152,20 @@ prop.table(table(group_men$drinks))
 prop.table(table(group_women$drinks))
 ```
 # Auch hier ergibt der Vergleich der Geschlechter eine recht gleichmäßige Verteilung, wobei die häufigste Kategorie "socially" mit 72.3% der Männer und 74.9% der Frauen ist. "desperately" und "often" tritt bei den Männern häufiger auf. 
+
+```{r}
+# Drogenkonsum
+
+ggplot(group_men, aes(x=drugs)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=drugs)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$drugs))
+
+prop.table(table(group_women$drugs))
+
+```
+# Drogenkosum tritt bei Männern häufiger aus, also bei den Frauen, wobei die meisten mit über 80% bei beiden Geschlechtern angeben, nie Drogen zu konsumieren.
+
 
 ```{r}
 # Bildungsstand:
@@ -273,7 +294,53 @@ prop.table(table(group_women$sign))
 
 ```{r}
 # Raucher:
-  
+
+ggplot(group_men, aes(x=smokes)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+ggplot(group_women, aes(x=smokes)) + geom_bar() + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+prop.table(table(group_men$smokes))
+
+prop.table(table(group_women$smokes))
+```
+# Was das Rauchen betrifft, sehen wir kaum einen Unterschied zwischen den Geschlechtern. Ich bin jedoch überrascht, dass es nur so wenige Raucher sind.
+
+```{r}
 # Sprachen:
 
+# Augrund der vielen Ausprägungen ist es hier schwer etwas sinnvolles herauszulesen. 
+
 ```
+
+
+# Klassifikation mittels logisitischer Regression
+
+```{r}
+okcupid_profiles <- data %>% select(age, status, sex, orientation, body_type, diet, drinks, drugs, education, height, income, offspring, pets, sign) %>% drop_na()
+
+okcupid_profiles_complete <- subset(okcupid_profiles, income!="-1")
+
+View(okcupid_profiles)
+
+prop.table(table(okcupid_profiles_complete$sex))
+```
+
+
+```{r}
+# ggf. sample bzw. downsample
+set.seed(1303)
+
+okcupid_profiles_complete$sex <- as.factor(okcupid_profiles_complete$sex)
+
+temp <- sample(nrow(okcupid_profiles_complete), nrow(okcupid_profiles_complete)*.7)
+
+trn_data <- okcupid_profiles_complete[temp,]
+tst_data <- okcupid_profiles_complete[-temp,]
+
+
+View(trn_data)
+
+# Create and fit your model
+logistic_model <- glm(sex ~ ., family = "binomial", data=trn_data)
+summary(logistic_model)
+```
+
