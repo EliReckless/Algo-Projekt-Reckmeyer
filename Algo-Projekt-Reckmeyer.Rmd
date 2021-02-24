@@ -1,5 +1,6 @@
 ---
-title: "Algo-Projekt"
+title: "Algo-Projekt: OKCUpid"
+author: Emanuel Elias Reckmeyer (2010837532)
 output: html_document
 ---
 
@@ -125,7 +126,7 @@ prop.table(table(group_men$body_type))
 
 prop.table(table(group_women$body_type))
 ```
-## Hier bietet sich eine Aufteilung der Geschlechter an, um zu sehen wie sich die beiden Geschlechter beschreiben. Wir sehen zum Beispiel, dass Männer sich mit 28.6% als athletisch beschreiben, während nur 10.8% der Frauen diese Beschreibung wählen. Bei den Frauen tritt mit 17.8% "curvy" auf wohingegen die Männer das nur in 0.3% der Fälle angeben. Die Werte für "average" liegen ungefähr gleich bei 27.2% und 26.2%. Interessant finde ich auch, dass es ein Label gibt, das "used up" lautet, also "verbraucht". Es wird relativ selten benutzt bei den Männern mit 0.8% jedoch häufiger als bei den Frauen mit 0.5%. Überraschend finde ich, dass nur 0.9% der Männer angeben "jacked" zu sein, was einem sehr muskulösen Körperbau entsprechen würde. 0.6% der Frauen geben an "jacked" zu sein. Hier hätte ich mir erwartet, dass das Verhältnis wesentlich größer ist. Frauen möchten fast doppelt so oft wie die Männer lieber nicht sagen ("rather not say") wie sie sich beschreiben würden. Das kommt jedoch generell nicht so häufig vor (Männer 0.3% / Frauen 0.5%).
+## Um zu sehen wie sich die beiden Geschlechter beschreiben brauchen wir uns nur den Prop-Table ansehen. Wir sehen zum Beispiel, dass Männer sich mit 28.6% als athletisch beschreiben, während nur 10.8% der Frauen diese Beschreibung wählen. Bei den Frauen tritt mit 17.8% "curvy" auf wohingegen die Männer das nur in 0.3% der Fälle angeben. Die Werte für "average" liegen ungefähr gleich bei 27.2% und 26.2%. Interessant finde ich auch, dass es ein Label gibt, das "used up" lautet, also "verbraucht". Es wird relativ selten benutzt bei den Männern mit 0.8% jedoch häufiger als bei den Frauen mit 0.5%. Überraschend finde ich, dass nur 0.9% der Männer angeben "jacked" zu sein, was einem sehr muskulösen Körperbau entsprechen würde. 0.6% der Frauen geben an "jacked" zu sein. Hier hätte ich mir erwartet, dass das Verhältnis wesentlich größer ist. Frauen möchten fast doppelt so oft wie die Männer lieber nicht sagen ("rather not say") wie sie sich beschreiben würden. Das kommt jedoch generell nicht so häufig vor (Männer 0.3% / Frauen 0.5%).
 
 ## Ernährungsweise:
 ```{r}
@@ -173,16 +174,8 @@ prop.table(table(group_men$education))
 prop.table(table(group_women$education))
 
 ```
-## Auch bei der Bildung sehen wir wieder einige NAs. Die häufigsten Kategorien sind ein Abschluss vom College/Universität, graduated from masters program und working on college/university. Was die erste betrifft sind die Geschlechter recht gleich verteilt. Bei den Frauen kommt ein Abschluss von einem Master jedoch häufiger vor (14.9% Männer, 19.6% Frauen). Auch bei denen, die sich gerade im Studium befinden, ist die Differenz eher gering. Bei den Männern ist die Drop-Out-Rate für diverse Bildungswege jedoch höher als bei den Frauen.
+## Auch bei der Bildung sehen wir wieder viele NAs. Die häufigsten Kategorien sind ein Abschluss vom College/Universität, graduated from masters program und working on college/university. Was die erste betrifft sind die Geschlechter recht gleich verteilt. Bei den Frauen kommt ein Abschluss von einem Master jedoch häufiger vor (14.9% Männer, 19.6% Frauen). Auch bei denen, die sich gerade im Studium befinden, ist die Differenz eher gering. Bei den Männern ist die Drop-Out-Rate für diverse Bildungswege jedoch höher als bei den Frauen.
 
-
-
-```{r}
-# Ethnie:
-
-asian <- sum(str_count(data$ethnicity, "asian"))
-# ToDo: Weitere Betrachtung sinnvoll? Wie?
-```
 
 ## Körpergröße:
 ```{r}
@@ -213,7 +206,7 @@ median_income_women <- median(income_group_women$income, na.rm=T)
 
 
 ```
-## Zunächst habe ich die Werte an -1 entfernt, weil diese Personen ihr Einkommen nicht angeben möchten. Am Ende bleiben uns bei den Männern 8391 und den Frauen 3113 übrig. Wir erkennen also, dass die überwiegende Mehrheit ihr Einkommen nicht angeben möchte. Das Verhältnis von Männern und Frauen ist auch ungleich, was bei der Interpretation der Ergebnisse eine wichtige Rolle spielt. Die Aussagen sind mit Vorsicht zu genießen.Schauen wir uns die resultierenden Graphen an, so stellen wir fest, dass die Männer ein höheres Einkommen haben (siehe auch Media und Mean). Das ist nicht überraschend. Der Graph zeigt auch, dass die Angabe in Einkommens-Spannen erfolgt, wir haben also diverse Spitzen im Graph.
+## Zunächst habe ich die Werte an -1 entfernt, weil diese Personen ihr Einkommen nicht angeben möchten. Am Ende bleiben uns bei den Männern 8391 und den Frauen 3113 übrig. Wir erkennen also, dass die überwiegende Mehrheit ihr Einkommen nicht angeben möchte. Das Verhältnis von Männern und Frauen ist auch ungleich, was bei der Interpretation der Ergebnisse eine wichtige Rolle spielt. Die Aussagen sind mit Vorsicht zu genießen.Schauen wir uns die resultierenden Graphen an, so stellen wir fest, dass die Männer ein höheres Einkommen haben (siehe auch Media und Mean). Das ist nicht überraschend. Der Graph zeigt auch, dass die Angabe in Einkommens-Kategorien erfolgt, wir haben also diverse Spitzen im Graph.
 
 ## Kinder und Kinderwunsch:
 ```{r}
@@ -273,21 +266,18 @@ prop.table(table(group_women$smokes))
 ```
 ## Was das Rauchen betrifft, sehen wir kaum einen Unterschied zwischen den Geschlechtern. Ich bin jedoch überrascht, dass es nur so wenige Raucher sind.
 
-### Ethnie, Standort, letztes mal online, Beruf und Sprachen habe ich nicht weiter analysiert, weil sie entweder nicht viekversprechend für eine Klassifikation sind, sehr viele NAs enthalten oder so viele Ausprägungen haben, dass man die gesamte Variable erst mal neu aufteilen müsste. Die Essayfragen habe ich ebenfalls nicht näher betrachtet, weil es hier schon sehr qualitativ wird und das den Rahmen dieses Projekts sprengen würde.
+### Ethnie, Standort, letztes mal online, Beruf und Sprachen habe ich nicht weiter analysiert, weil sie entweder nicht vielversprechend für eine Klassifikation sind, sehr viele NAs enthalten oder so viele Ausprägungen haben, dass man die gesamte Variable erst mal neu aufteilen müsste. Die Essayfragen habe ich ebenfalls nicht näher betrachtet, weil es hier schon sehr qualitativ wird und das den Rahmen dieses Projekts sprengen würde.
 
 ## Klassifikation mittels logisitischer Regression
 
-```{r}
-# Zunächst hole ich mir alle Variablen, die mich interessieren könnten und schauen wie viele übrig bleiben, wenn ich die NAs entferne.
+# Die logistische Regression sollte hier eine gute Möglichkeit bieten, ein Model zu erstellen, dass anhand der in der EDA untersuchten Variablen vorhersagen kann, ob es sich um einen Mann oder eine Frau handelt.
 
+```{r}
 okcupid_profiles <- data %>% select(age, status, sex, orientation, body_type, diet, drinks, drugs, education, height, income, offspring, pets, sign) %>% drop_na()
 
-# 9269 bleiben übrig, was auf jeden Fall ausreichend sein sollte.
-
 prop.table(table(okcupid_profiles$sex))
-# Klassenverteilung ist relativ ähnlich und sollte so in Ordnung sein.
 ```
-
+# Zunächst hole ich mir alle Variablen, die mich interessieren könnten und schauen wie viele übrig bleiben, wenn ich die NAs entferne. 9269 bleiben übrig, was auf jeden Fall ausreichend sein sollte. Klassenverteilung ist relativ ähnlich und sollte so in Ordnung sein.
 
 ```{r}
 set.seed(1303)
@@ -296,21 +286,22 @@ set.seed(1303)
 okcupid_profiles$sex <- as.factor(okcupid_profiles$sex)
 
 # Trainings- und Test-Datensplit
-temp <- sample(nrow(okcupid_profiles), nrow(okcupid_profiles)*.7)
+temp <- sample(nrow(okcupid_profiles), nrow(okcupid_profiles)*.8)
 
 trn_data <- okcupid_profiles[temp,]
 prop.table(table(trn_data$sex))
 
 tst_data <- okcupid_profiles[-temp,]
 prop.table(table(tst_data$sex))
+```
+# Verteilung der Geschlechter ist im Trainings- und Testdatensatz auch ok. Es wurde ein Split von 80/20 für Trainings und Testdaten gewählt, was zu zwei ausreichend großen Daten-Sets geführt hat. Zuvor habe ich es mit einem 70/30 Split versucht, die Accuracy ist mit 80/20 jedoch ein bisschen besser und nachdem immer noch 1854 Test-Daten vorhanden sind, entscheide ich mich für letzteren.
 
-# Verteilung der Geschlechter ist im Trainings- und Testdatensatz auch ok.
-
+```{r}
 # Create and fit model
 logistic_model <- glm(sex ~ age + orientation + body_type + height + pets + income + drugs + drinks + education + offspring + diet, family = "binomial", data=trn_data)
 summary(logistic_model)
 ```
-# Hier habe ich zunächst mal alle der Variablen verwendet, die ich mir im letzten Schritt rausgeholt hat und dann nach und nach die rausgegeben, die das Model nicht verbessert haben. 
+# Hier habe ich zunächst mal alle der Variablen verwendet, die ich mir im letzten Schritt rausgeholt hat und dann nach und nach die rausgegeben, die das Model nicht verbessert haben. Man erkennt, dass durch die vielen kategorischen Variabeln oft nicht signifikante Werte enthalten sind, ingesamt können einzelne Antwortvariablen jedoch einen sehr guten Indikator für Geschlecht darstellen. Vegetarische oder Vegane Ernährung, als auch Körpertyp-Beschreibung wären zwei gute Beispiele.
 
 ```{r}
 # Test Model
@@ -323,7 +314,7 @@ table_mat
 accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
 accuracy_Test
 ```
-## Das Model auf das ich mich am Eende festgelegt habe hat eine Accuracy von 86% was kein schlechter Wert ist. Ich denke man könnte noch einen höheren Wert erreichen, wenn man die Essay-Fragen auf eine sinnvolle Weise inkludiert.
+## Das Model auf das ich mich am Eende festgelegt habe hat eine Accuracy von 87% was kein schlechter Wert ist. Ich denke man könnte noch einen höheren Wert erreichen, wenn man die Essay-Fragen auf eine sinnvolle Weise inkludiert.
 
 ```{r}
 # Schauen wir uns auch noch precision und recall an:
@@ -348,4 +339,6 @@ prec
 rec <- recall(table_mat)
 rec
 ```
-## Diese Werte sind meiner Meinung nach auch völlig akzeptabel, sowohl precision als auch recall liegen bei 87%.
+## Diese Werte sind meiner Meinung nach auch völlig akzeptabel, precision liegt bei 87% und recall bei 88%.
+
+# Die Klassifikation mittels logistischer Regression kann als Erfolgreich betrachtet werden. Wie bereits vorhin erwähnt, könnte man mittels der Essay-Fragen noch mehr raus holen, was jedoch viel qualitative Interpretation bräuchte. Die Variablen könnten auch noch sauberer aufgeteilt werden.
